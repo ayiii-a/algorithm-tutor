@@ -23,7 +23,17 @@ Do not stop at "this line is wrong" — explain **why it went wrong**: a concept
 Preserve the **user's original approach and variable names** wherever possible; make the minimal edit. If the user's approach genuinely cannot work, first explain why, then offer an alternative — but state clearly that this is a change of approach, not a patch.
 
 **4b. Verify before presenting** (whenever a code execution tool is available)
-Run the fixed code through `scripts/verify.py` against the user's failing case plus a few edge cases (empty input, single element, duplicates, extreme values) before showing it. State the result in one line: `verified: 5/5 cases pass`.
+
+Run the fixed code through `scripts/verify.py` before showing it, then state the result in one line: `verified: 5/5 cases pass`.
+
+**Keep it to at most six cases.** The user's failing case, plus a handful chosen for a reason:
+
+| Pick | Why |
+|---|---|
+| The user's failing case | It is the one that matters |
+| The smallest input (empty, one element) | Where boundary bugs live |
+| A case exercising the specific bug just fixed | Proves the fix works |
+| One or two ordinary cases | Catches a fix that broke something else |
 
 ```bash
 python3 scripts/verify.py sol.py --method minPathSum \
@@ -31,7 +41,13 @@ python3 scripts/verify.py sol.py --method minPathSum \
 ```
 
 Add `--unordered` when any output order is acceptable, and `"inplace": 0` to a case when the problem mutates its first argument instead of returning.
-If verification fails, **fix it before presenting** — do not show code you have not run. If no execution tool is available, say so instead of implying the code was tested.
+
+**Hard limits — verification is a check, not a test suite:**
+- **Never write out bulk or randomly generated cases.** No loops producing hundreds of inputs, no exhaustive sweeps. Writing that JSON costs far more than the bug is worth
+- **At most two fix-and-rerun rounds.** If it still fails after the second, stop and present the code together with the failing case and what you think is wrong. Do not iterate silently
+- **Do not benchmark.** If the concern is performance, reason about the complexity instead of timing it
+
+If no execution tool is available, say so rather than implying the code was tested.
 
 **5. Key points**
 Walk through each fix and what the change means.
@@ -42,7 +58,14 @@ A table with: `Your version | Problem | Fix`.
 **7. Lesson / takeaway** (always required)
 Extract one transferable lesson from this bug. For example: "passing all the samples ≠ correct logic", "don't mix binary search templates", "duplicate elements break the decision criterion of binary search".
 
-If this is a bug worth remembering, offer the three-line entry ready to paste into `references/my-pitfalls.md` — pattern name, where it bit, the fix. Offer it once; do not push if it is ignored.
+If this is a bug worth remembering — a pattern rather than a one-off slip — offer to record it:
+
+- **With file write access** (Claude Code and similar): ask once, in one line — *"Record this in your pitfall log?"* — and append the three-line entry to `references/my-pitfalls.md` only after they agree. Never write to the file unasked.
+- **Without file write access**: print the three-line entry ready to paste, and say where it goes.
+
+Either way, offer it once. If it is ignored, drop it — do not raise it again in the same conversation.
+
+Not every bug earns an entry. A typo does not; a pattern that will recur does. When in doubt, skip it — a log diluted with one-off slips stops being worth reading.
 
 ## Special care
 

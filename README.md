@@ -9,6 +9,11 @@ This is not a tool for solving more problems; Claude can already do that. It is 
 
 Available in **English** and **Chinese (中文)**. See [Install](#install).
 
+<div align="center">
+  <img src="./assets/demo.png" alt="The same problem, answered without and with the skill" width="800">
+  <br>
+  <sub>The same problem, answered without the skill and with it</sub>
+</div>
 
 <!--
   assets/demo.png — capture this yourself:
@@ -151,6 +156,8 @@ Step 4 gives the **structure** of the argument by default and fills in a step wh
 
 Mode B checks this file before every verdict. When your bug matches a recorded pattern, it says so up front — *"this is the same mistake as 'mixing binary search templates', third time"* — and spends its words on **why the pattern keeps recurring** instead of re-explaining the mechanics.
 
+At the end of a review it offers to record the bug. Where it can write files (Claude Code and similar) it asks once and appends only if you agree — it never edits the file unasked. Elsewhere it prints the entry for you to paste. Not every bug earns one: a typo does not, a pattern that will recur does.
+
 A mistake made three times is a different problem from one made once. This file makes the difference visible.
 
 ### Verification
@@ -172,6 +179,8 @@ python3 scripts/verify.py sol.py --method minPathSum \
 ```
 
 Supports `--unordered` for problems where any output order is accepted, `"inplace": 0` for problems that mutate their first argument, and a per-case timeout.
+
+Verification is deliberately capped: **at most six cases and two fix-and-rerun rounds**, no bulk or randomly generated inputs, no benchmarking. It is a check that the fix works, not a test suite — writing out hundreds of cases costs more than the bug is worth.
 
 The script is ordinary local Python — it runs wherever your assistant runs code, sends nothing anywhere, and has no dependencies beyond the standard library. Read it before use if that matters to you; it is 166 lines.
 
