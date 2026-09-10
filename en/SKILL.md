@@ -1,5 +1,5 @@
 ---
-name: algorithm_tutor
+name: algorithm-tutor
 description: A fixed output framework for explaining algorithm problems and reviewing solution code. Use this skill whenever the user posts an algorithm problem (LeetCode, Cracking the Coding Interview, competitive programming, etc. — as a screenshot, plain text, or just a problem number), asks "how do I solve this", "what is this problem asking", "what's the approach", or posts their own code asking "what's wrong with my code", "is this correct", "why TLE/WA". Also applies when the user asks about a general technique ("how do I define DP states", "how do I handle binary search boundaries"), asks where to start or what to practice next, asks to be quizzed interview-style, or brings a course-style question (prove correctness, derive a bound, compare two algorithms, do a reduction).
 ---
 

@@ -1,7 +1,5 @@
-
-
 <div align="center">
-  <img src="./assets/logo.png" alt="algorithm_tutor logo" width="220">
+  <img src="./assets/logo.png" alt="algorithm-tutor logo" width="220">
   <h1>Algorithm Tutor</h1>
 </div>
 
@@ -11,6 +9,15 @@ This is not a tool for solving more problems; Claude can already do that. It is 
 
 Available in **English** and **Chinese (中文)**. See [Install](#install).
 
+
+<!--
+  assets/demo.png — capture this yourself:
+  ask the same problem twice, once in a fresh conversation without the skill
+  and once with it, and put the two replies side by side. The point to make
+  visible is that the second one has labelled sections in a fixed order.
+  A still image is enough; it does not need to be a GIF.
+-->
+
 ---
 
 ## The problem it solves
@@ -18,6 +25,26 @@ Available in **English** and **Chinese (中文)**. See [Install](#install).
 Ask an LLM about an algorithm problem twice and you get two differently-shaped answers. One time it opens with code, another time with a long analogy. Sometimes it walks through an example you did not need; sometimes it skips the boundary condition you were actually stuck on. When you are working through a few hundred problems, that inconsistency is the friction.
 
 This skill fixes the shape of the answer so you always know where to look — and, just as importantly, defines when a section should be **left out** rather than padded.
+
+---
+
+## Design principles
+
+Seven decisions shape everything else here. They are worth stating because several of them cut against what a prompt of this kind usually does.
+
+**1. Structure, not knowledge.** The skill does not make the model better at algorithms — nothing in a prompt can. It makes the *shape* of the answer predictable, so you always know where the complexity analysis is and where the "here is how people get this wrong" note is.
+
+**2. Omission is a feature.** Several sections are conditional, each with a written test. `Underlying Idea` appears only if it passes *could this paragraph guide you through a problem you have not seen yet?* — a takeaway that merely restates the solution gets dropped. The instruction throughout is: a shorter answer beats a padded one.
+
+**3. References describe decisions, not solutions.** `references/dp.md` does not list DP problems. It says which things a DP problem forces you to pin down, and in what order — state, then transition, then base cases, then traversal order — and what goes wrong at each step. Sixteen files, each answering the same question for its own problem type.
+
+**4. Load only what the question needs.** `SKILL.md` is read every conversation, so it holds nothing but routing and the rules that apply everywhere — 77 lines. Each mode's skeleton sits in its own file and is read only when that mode fires. A conversation about a proof never loads the hundred lines describing how to teach a coding problem.
+
+**5. Never show code that has not been run.** When a code execution tool is available, Mode B is required to run the fix through `scripts/verify.py` before presenting it, and to say so explicitly when no such tool is available rather than implying the code was tested.
+
+**6. Deference to your approach.** If your code is correct, the skill says so and stops — it does not manufacture flaws to seem useful. If you ask for a fix inside your own framework, it works inside your framework rather than rewriting it into a preferred one. If you challenge an explanation, it verifies rather than deflects.
+
+**7. Specific beats general.** The pitfalls are oddly precise — the exact wrong width formula in problem 84, the two ways Python's arbitrary-precision integers break 32-bit bit manipulation, why duplicates destroy the decision criterion in binary search. They are that specific because they came from getting them wrong, and a warning you can act on is worth more than "watch your boundaries".
 
 ---
 
@@ -55,8 +82,6 @@ Two sections are **conditional**, each with an explicit test:
 - **Problem Restatement** appears only when the statement itself is the obstacle — an unstated convention, a constraint that is easy to skim past, layered rules presented flat, or a reskin of something you already solved.
 - **Underlying Idea** appears only if it passes this test: *could this paragraph guide you through a problem you have not seen yet?* If the takeaway would just restate the solution ("this problem teaches you to use DP"), it is dropped.
 
-A shorter answer is explicitly preferred over a padded one.
-
 ### Mode B — Review code
 
 ```
@@ -70,12 +95,6 @@ A shorter answer is explicitly preferred over a padded one.
 6. Summary table
 7. Lesson
 ```
-
-Three rules matter more than the skeleton:
-
-- If the code is correct, **say so and stop** — no inventing flaws to seem useful
-- **Your approach is not rewritten into a preferred one.** Ask for a fix within your framework and you get one
-- **Never presents code it has not run**, when a code execution tool is available (see [Verification](#verification))
 
 ### Mode F — Course question
 
@@ -93,13 +112,7 @@ Step 4 gives the **structure** of the argument by default and fills in a step wh
 
 ---
 
-## How the references work
-
-The core of this skill is not the output skeletons — it is the reference files. Each one answers a single question for its problem type:
-
-> **What does this kind of problem require you to pin down, and in what order?**
-
-`references/dp.md` does not list DP problems. It says: derive the state definition first (using a freeze test and a drop-dimension test), then the transition, then the base cases, then the traversal order, then where the answer lives — and it explains what goes wrong at each step.
+## The reference files
 
 | Reference | Covers |
 |---|---|
@@ -160,24 +173,23 @@ python3 scripts/verify.py sol.py --method minPathSum \
 
 Supports `--unordered` for problems where any output order is accepted, `"inplace": 0` for problems that mutate their first argument, and a per-case timeout.
 
-Mode B is instructed to run this before presenting a fix, and to **say so explicitly** when no execution tool is available rather than implying the code was tested.
+The script is ordinary local Python — it runs wherever your assistant runs code, sends nothing anywhere, and has no dependencies beyond the standard library. Read it before use if that matters to you; it is 166 lines.
 
 ---
 
 ## Repository layout
 
 ```
-algorithm_tutor/
-├── english/                    # English edition
+algorithm-tutor/
+├── en/                         # English edition
 │   ├── SKILL.md                #   77 lines — routing and universal rules only
 │   ├── modes/                  #   5 files — one output skeleton each
 │   ├── references/             #   17 files
 │   └── scripts/verify.py
 ├── cn/                         # 中文版 — same structure
+├── assets/
 └── LICENSE
 ```
-
-**Progressive disclosure.** `SKILL.md` is loaded every conversation, so it holds only the mode-detection table, the type-routing table, and the rules that apply everywhere. Each mode's skeleton lives in its own file and is read only when that mode fires. A conversation about a proof never loads the 100 lines describing how to teach a coding problem — roughly 10,000–16,000 characters saved per conversation compared to keeping everything in one file.
 
 The two language editions are **the same skill**, section for section. Pick one; installing both gives Claude two skills with conflicting names.
 
@@ -187,19 +199,56 @@ The two language editions are **the same skill**, section for section. Pick one;
 
 ## Install
 
+### Claude Code
+
 ```bash
-git clone https://github.com/ayiii-a/algorithm_tutor.git
-cd algorithm_tutor
+git clone https://github.com/ayiii-a/algorithm-tutor.git
 
-# English edition
-cp -r english algorithm_tutor && zip -r algorithm_tutor.skill algorithm_tutor/ && rm -rf algorithm_tutor
+# English edition, available in every project
+cp -r algorithm-tutor/en ~/.claude/skills/algorithm-tutor
 
-# Chinese edition — same command with `cn` in place of `english`
+# Chinese edition — replace `en` with `cn`
 ```
 
-> The copy step matters. The folder inside the archive must be named `algorithm_tutor` to match the `name:` field in `SKILL.md`. Zipping `english/` directly produces a folder called `english`, and the skill will not load.
+To share it with a team instead, copy into a project's `.claude/skills/` and commit it:
 
-Then add the `.skill` file through the Claude interface, paste a problem, and ask how to solve it.
+```bash
+cp -r algorithm-tutor/en /path/to/project/.claude/skills/algorithm-tutor
+```
+
+Restart Claude Code afterwards.
+
+### Claude.ai
+
+Package the edition you want and upload the `.skill` file through the interface:
+
+```bash
+git clone https://github.com/ayiii-a/algorithm-tutor.git
+cd algorithm-tutor
+
+# stage the edition under the skill's own name, then zip that
+mkdir -p build/algorithm-tutor
+cp -r en/* build/algorithm-tutor/
+(cd build && zip -r ../algorithm-tutor.skill algorithm-tutor/)
+```
+
+> The staging step is not redundant: the folder inside the archive has to be named `algorithm-tutor` to match the `name:` field in `SKILL.md`. Zipping `en/` directly produces a folder called `en`, and the skill will not load.
+
+### Any other assistant
+
+The whole thing is plain Markdown plus one Python file, so it transfers — with one caveat about how much of it survives.
+
+**If the assistant can read files from a project or workspace** (a ChatGPT Project, a Cursor or Windsurf workspace, an editor agent with filesystem access), put the edition's folder there. Progressive disclosure works as designed: it reads `SKILL.md`, then pulls in the one mode file and the one or two references the question needs.
+
+**In a plain chat with no file access**, progressive disclosure cannot work — nothing can fetch a file mid-conversation. Paste `SKILL.md` plus the single mode file you want as your first message:
+
+- Learning a new problem → `SKILL.md` + `modes/teach.md`
+- Debugging your code → `SKILL.md` + `modes/review.md`
+- A proof or a homework question → `SKILL.md` + `modes/course.md`
+
+Add the matching reference (`references/dp.md` and so on) if the answer needs it. Two files is usually enough; the routing table in `SKILL.md` tells you which third one to reach for.
+
+`scripts/verify.py` only does anything where the assistant can execute code. Everything else works without it.
 
 ---
 
@@ -229,8 +278,6 @@ Problems are cited by number. Two numbering systems appear:
 - Bare numbers are **LeetCode** (`84 Largest Rectangle in Histogram`)
 - `CCI xx.xx` is **Cracking the Coding Interview** (`CCI 08.03 Magic Index`)
 
-Some of the pitfalls are unusually specific — the exact wrong width formula in problem 84, the two Python integer-width traps, why duplicate elements break the decision criterion in binary search. They are specific because they came out of actually getting them wrong.
-
 ---
 
 ## Contributing
@@ -243,7 +290,7 @@ Useful contributions, roughly in order of value:
 
 Please keep the existing shape: references describe *what to pin down and in what order*, not lists of problems and solutions.
 
-**If you change one edition, mirror it in the other** so `english/` and `cn/` stay in sync. A PR touching only one side is still welcome — just say so, and the other side can follow in a separate commit.
+**If you change one edition, mirror it in the other** so `en/` and `cn/` stay in sync. A PR touching only one side is still welcome — just say so, and the other side can follow in a separate commit.
 
 ---
 
