@@ -9,19 +9,7 @@ This is not a tool for solving more problems; Claude can already do that. It is 
 
 Available in **English** and **Chinese (中文)**. See [Install](#install).
 
-<div align="center">
-  <img src="./assets/demo.png" alt="The same problem, answered without and with the skill" width="800">
-  <br>
-  <sub>The same problem, answered without the skill and with it</sub>
-</div>
 
-<!--
-  assets/demo.png — capture this yourself:
-  ask the same problem twice, once in a fresh conversation without the skill
-  and once with it, and put the two replies side by side. The point to make
-  visible is that the second one has labelled sections in a fixed order.
-  A still image is enough; it does not need to be a GIF.
--->
 
 ---
 
