@@ -10,8 +10,8 @@ This is not a tool for solving more problems; Claude can already do that. It is 
 Available in **English** and **Chinese (中文)**. See [Install](#install).
 
 <div align="center">
-  <img src="./assets/before.png" alt="Without skill" width="800">
-  <img src="./assets/after.png" alt="With skill" width="800">
+  <img src="./assets/before.gif" alt="Without skill" height = 400 width="400">
+  <img src="./assets/after.gif" alt="With skill" height = 400 width="400">
   <br>
   <sub>The same problem, answered without the skill and with it</sub>
 </div>
