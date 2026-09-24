@@ -36,7 +36,7 @@ Seven decisions shape everything else here. They are worth stating because sever
 
 **3. References describe decisions, not solutions.** `references/dp.md` does not list DP problems. It says which things a DP problem forces you to pin down, and in what order — state, then transition, then base cases, then traversal order — and what goes wrong at each step. Sixteen files, each answering the same question for its own problem type.
 
-**4. Load only what the question needs.** `SKILL.md` is read every conversation, so it holds nothing but routing and the rules that apply everywhere — 77 lines. Each mode's skeleton sits in its own file and is read only when that mode fires. A conversation about a proof never loads the hundred lines describing how to teach a coding problem.
+**4. Progressive Disclosure.** `SKILL.md` is read every conversation, so it holds nothing but routing and the rules that apply everywhere — 77 lines. Each mode's skeleton sits in its own file and is read only when that mode fires. A conversation about a proof never loads the hundred lines describing how to teach a coding problem.
 
 **5. Never show code that has not been run.** When a code execution tool is available, Mode B is required to run the fix through `scripts/verify.py` before presenting it, and to say so explicitly when no such tool is available rather than implying the code was tested.
 
